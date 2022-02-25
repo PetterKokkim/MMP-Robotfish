@@ -1,0 +1,2 @@
+https://howtomechatronics.com/tutorials/arduino/arduino-brushless-motor-control-tutorial-esc-bldc/
+https://www.arduinoplatform.com/dc-motors/driving-a-brushed-dc-motor-with-arduino/
