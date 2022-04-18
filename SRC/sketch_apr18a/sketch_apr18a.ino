@@ -3,53 +3,93 @@
 const int stepperDirectionPin[nrOfSteppers] = {11};
 const int stepperPulsePin[nrOfSteppers] = {10};
 
-
+int motorSpeed;
+String menuselect;
 
 void setup() {
   // put your setup code here, to run once:
-/*  pinMode(pulPin, OUTPUT);
-  pinMode(dirPin, OUTPUT);
-  pinMode(enblPin, OUTPUT);
+  /*  pinMode(pulPin, OUTPUT);
+    pinMode(dirPin, OUTPUT);
+    pinMode(enblPin, OUTPUT);
 
-  digitalWrite(pulPin, LOW);
-  digitalWrite(enblPin, LOW);
-   digitalWrite(dirPin, LOW);
+    digitalWrite(pulPin, LOW);
+    digitalWrite(enblPin, LOW);
+     digitalWrite(dirPin, LOW);
 
+    Serial.begin(9600);
+    Serial.println("init");
+
+    digitalWrite(enblPin, HIGH);
+    delay(100);
+    digitalWrite(enblPin, LOW);
+  */
+  for (int s = 0; s < nrOfSteppers; s++) {
+    pinMode(stepperDirectionPin[s], OUTPUT);
+    digitalWrite(stepperDirectionPin[s], LOW);
+    pinMode(stepperPulsePin[s], OUTPUT);
+    digitalWrite(stepperPulsePin[s], LOW);
+  }
   Serial.begin(9600);
-  Serial.println("init");
-
-  digitalWrite(enblPin, HIGH);
-  delay(100);
-  digitalWrite(enblPin, LOW);
-*/
-for (int s=0; s<nrOfSteppers; s++){
-  pinMode(stepperDirectionPin[s], OUTPUT);
-  digitalWrite(stepperDirectionPin[s], LOW);
-  pinMode(stepperPulsePin[s], OUTPUT);
-  digitalWrite(stepperPulsePin[s], LOW);
-}
-
-Serial.begin(9600);
+  delay(2000);
+  Serial.println("---Welcome to fishrobot fish tail tester---");
+  Serial.println(" 1 --- Start motor");
+  Serial.println(" 2 --- Set motor speed");
+  Serial.println(" 3 --- Set to home position");
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  stepper(0,250,1,2500);
-  stepper(0,250,0,5000);
 
-Serial.println("---");
+  if (Serial.available())
+  {
+    menuselect = Serial.readStringUntil('\n');
+    if (menuselect.equals("1"))
+    {
+      for (int i = 0; i < 20; i++) {
+        stepper(0, 250, 1, motorSpeed);
+        stepper(0, 250, 0, motorSpeed);
+      }
+    }
+    else if (menuselect.equals("2"))
+    {
+      Serial.println("Set speed:  ");
+      delay(1000);
+      int y = Serial.parseInt();
+      if (y > 0) {
+        motorSpeed = y;
+        Serial.println("Speed set to");
+        Serial.println(motorSpeed);
+      }
+      else
+      {
+        Serial.println("Invalid input");
+      }
 
+    }
+    else if (menuselect.equals("3"))
+    {
+
+    }
+    else {
+      Serial.println("Invalid command");
+    }
+  }
 }
 
-void stepper(int motor,int steps, boolean stepDirection, int Speed){
+void stepper(int motor, int steps, boolean stepDirection, int Speed) {
   int currentDirection = digitalRead(stepperDirectionPin[motor]);
-  if(stepDirection != currentDirection){
+  if (stepDirection != currentDirection) {
     digitalWrite(stepperDirectionPin[motor], stepDirection);
     delay(100);
-    }
-  for(int s=0; s<steps; s++){
-    digitalWrite(stepperPulsePin[motor],LOW);
+  }
+  for (int s = 0; s < steps; s++) {
+    digitalWrite(stepperPulsePin[motor], LOW);
     digitalWrite(stepperPulsePin[motor], HIGH);
     delayMicroseconds(Speed);
-    }
+  }
+}
+
+
+void menu() {
+
 }
