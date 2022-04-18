@@ -8,21 +8,7 @@ String menuselect;
 
 void setup() {
   // put your setup code here, to run once:
-  /*  pinMode(pulPin, OUTPUT);
-    pinMode(dirPin, OUTPUT);
-    pinMode(enblPin, OUTPUT);
 
-    digitalWrite(pulPin, LOW);
-    digitalWrite(enblPin, LOW);
-     digitalWrite(dirPin, LOW);
-
-    Serial.begin(9600);
-    Serial.println("init");
-
-    digitalWrite(enblPin, HIGH);
-    delay(100);
-    digitalWrite(enblPin, LOW);
-  */
   for (int s = 0; s < nrOfSteppers; s++) {
     pinMode(stepperDirectionPin[s], OUTPUT);
     digitalWrite(stepperDirectionPin[s], LOW);
@@ -46,8 +32,8 @@ void loop() {
     if (menuselect.equals("1"))
     {
       for (int i = 0; i < 20; i++) {
-        stepper(0, 250, 1, motorSpeed);
-        stepper(0, 250, 0, motorSpeed);
+        stepper(0, 200, 1, motorSpeed);
+        stepper(0, 200, 0, motorSpeed);
       }
     }
     else if (menuselect.equals("2"))
@@ -55,14 +41,15 @@ void loop() {
       Serial.println("Set speed:  ");
       delay(1000);
       int y = Serial.parseInt();
-      if (y > 0) {
+      if (y > 349) {
         motorSpeed = y;
         Serial.println("Speed set to");
         Serial.println(motorSpeed);
       }
       else
       {
-        Serial.println("Invalid input");
+        Serial.println("Current motor speed:  ");
+        Serial.println(motorSpeed);
       }
 
     }
@@ -87,9 +74,4 @@ void stepper(int motor, int steps, boolean stepDirection, int Speed) {
     digitalWrite(stepperPulsePin[motor], HIGH);
     delayMicroseconds(Speed);
   }
-}
-
-
-void menu() {
-
 }
