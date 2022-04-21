@@ -1,2 +1,3 @@
 https://howtomechatronics.com/tutorials/arduino/arduino-brushless-motor-control-tutorial-esc-bldc/
 https://www.arduinoplatform.com/dc-motors/driving-a-brushed-dc-motor-with-arduino/
+https://www.linengineering.com/products/stepper-motors/hybrid-stepper-motors/4118-series/4118C-01/WO-4118C-01
