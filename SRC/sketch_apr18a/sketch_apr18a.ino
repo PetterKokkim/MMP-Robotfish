@@ -1,17 +1,21 @@
 #define BLYNK_PRINT Serial
-#define ESP8266_BAUD 9600
+#define BLYNK_DEBUG
 #define BLYNK_TEMPLATE_ID "TMPLw_qpjb4o"
 #define BLYNK_DEVICE_NAME "MMPFishrobot"
+#define ESP8266_BAUD 9600
 #define nrOfSteppers 2
 
 #include <ESP8266_Lib.h>
 #include <BlynkSimpleShieldEsp8266.h>
 #include <SoftwareSerial.h>
+#include <SimpleTimer.h>
+
 
 const int stepperDirectionPin[nrOfSteppers] = {11, 13};
 const int stepperPulsePin[nrOfSteppers] = {10, 12};
 
 int motorSpeed = 500;
+int motorSetting = 0;
 String inputString = "";
 SimpleTimer timer;
 
@@ -33,9 +37,9 @@ WidgetLCD lcd(V0);
 ESP8266 wifi(&EspSerial);
 
 void setup() {
-  // put your setup code here, to run once:
-  led2.off();
+  //Debug Console
   Serial.begin(9600);
+
   delay(10);
 
   for (int s = 0; s < nrOfSteppers; s++) {
@@ -44,22 +48,27 @@ void setup() {
     pinMode(stepperPulsePin[s], OUTPUT);
     digitalWrite(stepperPulsePin[s], LOW);
   }
-  Blynk.virtualWrite(V4, motorSpeed);
 
+  // Set ESP8266 baud rate
   EspSerial.begin(ESP8266_BAUD);
   delay(10);
 
   Blynk.begin(auth, wifi, ssid, pass);
 
+//  Serial.println("Booting");
+//  terminal.println(F("- - - - TERMINAL - - - -"));
+//  terminal.flush();
+//  Blynk.virtualWrite(V4, motorSpeed);
+
+//  timer.setInterval(1000, Sent_serial);
 
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   Blynk.run();
-  led2.on();
-  timer.run();
-  
+//  timer.run();
+
 }
 void Sent_serial() {
   // Sent serial data to Blynk terminal - Unlimited string readed
@@ -68,27 +77,38 @@ void Sent_serial() {
   while (Serial.available()) {
     character = Serial.read();
     content.concat(character);
-
   }
   if (content != "") {
-    Blynk.virtualWrite (V2, content);
+    Blynk.virtualWrite (V6, content);
   }
 }
 
 BLYNK_WRITE(V0) {
-
   int pinValue = param.asInt();
   if (pinValue == 1) {
     led1.on();
-    for (int i = 0; i < 20; i++) {
-      stepper(0, 100, 1, motorSpeed);
-      stepper(1, 100, 0, motorSpeed);
-      stepper(0, 200, 0, motorSpeed);
-      stepper(1, 200, 1, motorSpeed);
-      stepper(0, 100, 1, motorSpeed);
-      stepper(1, 100, 0, motorSpeed);
+    if (motorSetting == 0) {
+      Serial.println("Motor 1 is running");
+      for (int i = 0; i < 20; i++) {
+        stepper(0, 100, 1, motorSpeed);
+        stepper(0, 200, 0, motorSpeed);
+        stepper(0, 100, 1, motorSpeed);
+      }
     }
-    Serial.println("Stopped");
+    if (motorSetting == 1) {
+      Serial.println("Motor 1 and 2 is running");
+      for (int i = 0; i < 20; i++) {
+        stepper(0, 100, 1, motorSpeed);
+        stepper(1, 100, 0, motorSpeed);
+        stepper(0, 100, 0, motorSpeed);
+        stepper(1, 100, 1, motorSpeed);
+        stepper(0, 100, 0, motorSpeed);
+        stepper(1, 100, 1, motorSpeed);
+        stepper(0, 100, 1, motorSpeed);
+        stepper(1, 100, 0, motorSpeed);
+      }
+    }
+    Serial.println("Motor has stopped");
   }
   led1.off();
 }
@@ -97,7 +117,16 @@ BLYNK_WRITE(V1) {
   if (pinValue == 1) {
     led1.on();
     stepper(0, 400, 1, motorSpeed);
-    Serial.println("Stopped");
+    Serial.println("Motor 1 has stopped");
+  }
+  led1.off();
+}
+BLYNK_WRITE(V16) {
+  int pinValue = param.asInt();
+  if (pinValue == 1) {
+    led1.on();
+    stepper(1, 400, 1, motorSpeed);
+    Serial.println("Motor 2 has stopped");
   }
   led1.off();
 }
@@ -117,16 +146,34 @@ BLYNK_WRITE(V3) {
   }
   led1.off();
 }
-
+BLYNK_WRITE(V14) {
+  int pinValue = param.asInt();
+  if (pinValue == 1) {
+    led1.on();
+    stepper(1, 1, 0, 2000);
+  }
+  led1.off();
+}
+BLYNK_WRITE(V15) {
+  int pinValue = param.asInt();
+  if (pinValue == 1) {
+    led1.on();
+    stepper(1, 1, 1, 2000);
+  }
+  led1.off();
+}
 BLYNK_WRITE(V7) {
   Blynk.setProperty(V7, "step", 50);
 
   int pinValue = param.asInt();
-  Serial.println(pinValue);
+
 
   if (pinValue >= 350 <= 3000) {
     motorSpeed = pinValue;
+    Serial.print("Speed set to: ");
+    Serial.println(motorSpeed);
   }
+
   Blynk.virtualWrite(V4, motorSpeed);
 }
 BLYNK_WRITE(V8) {
@@ -134,13 +181,18 @@ BLYNK_WRITE(V8) {
   if (pinValue == 1) {
     motorSpeed = 500;
     Blynk.virtualWrite(V4, motorSpeed);
+    Serial.print("Speed set to: ");
+    Serial.println(motorSpeed);
   }
+
 }
 BLYNK_WRITE(V9) {
   int pinValue = param.asInt();
   if (pinValue == 1) {
     motorSpeed = 1000;
     Blynk.virtualWrite(V4, motorSpeed);
+    Serial.print("Speed set to: ");
+    Serial.println(motorSpeed);
   }
 }
 BLYNK_WRITE(V10) {
@@ -148,6 +200,8 @@ BLYNK_WRITE(V10) {
   if (pinValue == 1) {
     motorSpeed = 1500;
     Blynk.virtualWrite(V4, motorSpeed);
+    Serial.print("Speed set to: ");
+    Serial.println(motorSpeed);
   }
 }
 BLYNK_WRITE(V11) {
@@ -155,6 +209,18 @@ BLYNK_WRITE(V11) {
   if (pinValue == 1) {
     motorSpeed = 2000;
     Blynk.virtualWrite(V4, motorSpeed);
+    Serial.print("Speed set to: ");
+    Serial.println(motorSpeed);
+  }
+}
+BLYNK_WRITE(V13) {
+  int pinValue = param.asInt();
+  motorSetting = pinValue;
+  if (motorSetting == 0) {
+    Serial.println("Motor setting have been set to singel motor");
+  }
+  if (motorSetting == 1) {
+    Serial.println("Motor setting have been set to dobbel motor");
   }
 }
 
