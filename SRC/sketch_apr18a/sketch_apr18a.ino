@@ -8,7 +8,6 @@
 #include <ESP8266_Lib.h>
 #include <BlynkSimpleShieldEsp8266.h>
 #include <SoftwareSerial.h>
-#include <SimpleTimer.h>
 
 
 const int stepperDirectionPin[nrOfSteppers] = {11, 13};
@@ -17,7 +16,6 @@ const int stepperPulsePin[nrOfSteppers] = {10, 12};
 int motorSpeed = 500;
 int motorSetting = 0;
 String inputString = "";
-SimpleTimer timer;
 
 WidgetLED led1(V5);
 WidgetLED led2(V12);
@@ -27,8 +25,8 @@ WidgetTerminal terminal(V6);
 char auth[] = "p86vJfZq6gdOe6wOPgWEcw93mAwO5-1A";
 
 //Wifi login information
-char ssid[] = "G5Zone"; //You can replace the wifi name to your wifi
-char pass[] = "";  //Type password of your wifi.
+char ssid[] = "OnePlus 8"; //You can replace the wifi name to your wifi
+char pass[] = "Petter98";  //Type password of your wifi.
 bool connecteToBlynk = false;
 
 SoftwareSerial EspSerial(2, 3); // RX, TX
