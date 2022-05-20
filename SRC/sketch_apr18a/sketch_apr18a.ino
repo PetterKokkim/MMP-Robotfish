@@ -9,7 +9,6 @@
 #include <BlynkSimpleShieldEsp8266.h>
 #include <SoftwareSerial.h>
 
-
 const int stepperDirectionPin[nrOfSteppers] = {11, 13};
 const int stepperPulsePin[nrOfSteppers] = {10, 12};
 
@@ -30,22 +29,21 @@ char pass[] = "Petter98";  //Type password of your wifi.
 bool connecteToBlynk = false;
 
 SoftwareSerial EspSerial(2, 3); // RX, TX
-WidgetLCD lcd(V0);
 
 ESP8266 wifi(&EspSerial);
 
 void setup() {
   //Debug Console
-  Serial.begin(9600);
-
-  delay(10);
-
   for (int s = 0; s < nrOfSteppers; s++) {
     pinMode(stepperDirectionPin[s], OUTPUT);
     digitalWrite(stepperDirectionPin[s], LOW);
     pinMode(stepperPulsePin[s], OUTPUT);
     digitalWrite(stepperPulsePin[s], LOW);
   }
+  
+  Serial.begin(9600);
+
+  delay(10);
 
   // Set ESP8266 baud rate
   EspSerial.begin(ESP8266_BAUD);
@@ -53,19 +51,18 @@ void setup() {
 
   Blynk.begin(auth, wifi, ssid, pass);
 
-//  Serial.println("Booting");
-//  terminal.println(F("- - - - TERMINAL - - - -"));
-//  terminal.flush();
-//  Blynk.virtualWrite(V4, motorSpeed);
+  Serial.println("Booting");
 
-//  timer.setInterval(1000, Sent_serial);
+  Blynk.virtualWrite(V4, motorSpeed);
+
+  timer.setInterval(1000L, Sent_serial);
 
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   Blynk.run();
-//  timer.run();
+  timer.run();
 
 }
 void Sent_serial() {
@@ -161,10 +158,7 @@ BLYNK_WRITE(V15) {
   led1.off();
 }
 BLYNK_WRITE(V7) {
-  Blynk.setProperty(V7, "step", 50);
-
   int pinValue = param.asInt();
-
 
   if (pinValue >= 350 <= 3000) {
     motorSpeed = pinValue;
