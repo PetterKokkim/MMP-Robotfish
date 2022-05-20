@@ -24,8 +24,8 @@ WidgetTerminal terminal(V6);
 char auth[] = "p86vJfZq6gdOe6wOPgWEcw93mAwO5-1A";
 
 //Wifi login information
-char ssid[] = "G5Zone"; //You can replace the wifi name to your wifi
-char pass[] = "";  //Type password of your wifi.
+char ssid[] = "OnePlus 8"; //You can replace the wifi name to your wifi
+char pass[] = "Petter98";  //Type password of your wifi.
 
 SoftwareSerial EspSerial(2, 3); // RX, TX
 
